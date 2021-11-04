@@ -14,6 +14,15 @@ class Motoboy extends BaseController
 
     public function __construct()
     {
+        $this->session = \Config\Services::session();        
+        $this->session->start();
+
+        $session = $this->session->get();        
+        if(!isset($session['logged_in']) || $session['logged_in'] == false){
+            header("Location:".base_url());
+            die();
+        }
+        
         $this->motoboyModel = new motoboyModel();   
         $this->controller = 'motoboy';
         $this->form = 'motoboy_form';

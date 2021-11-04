@@ -19,8 +19,8 @@
             <div class="dropdown-divider"></div>            
             <a class="dropdown-item" href="<?php echo base_url('motoboy');?>">Motoboys</a>
             <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="<?php echo base_url('company');?>">Empresas</a>            
-            <div class="dropdown-divider"></div> 
+            <!--a class="dropdown-item" href="<?php echo base_url('company');?>">Empresas</a>            
+            <div class="dropdown-divider"></div--> 
             <a class="dropdown-item" href="<?php echo base_url('user');?>">Usuários</a>
         </div>
       </li>

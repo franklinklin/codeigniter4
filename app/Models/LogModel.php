@@ -3,12 +3,11 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
-$this->session = \Config\Services::session();
 
-class UserModel extends Model
+class LogModel extends Model
 {
     protected $DBGroup              = 'default';
-    protected $table                = 'user';
+    protected $table                = 'log';
     protected $primaryKey           = 'id';
     protected $useAutoIncrement     = true;
     protected $insertID             = 0;
@@ -17,8 +16,11 @@ class UserModel extends Model
     protected $protectFields        = true;
     protected $allowedFields        = [
         'id',
-        'email',
-        'password'
+        'id_user',
+        'id_module',
+        'date',
+        'action'
+
     ];
 
     // Dates
@@ -44,35 +46,18 @@ class UserModel extends Model
     protected $afterFind            = [];
     protected $beforeDelete         = [];
     protected $afterDelete          = [];
-    
-/*    public function __construct()
-    {
+
+    function list(){
         
-    }*/
-
-    function checkLogin($cpf, $password){
-        
-        $this->session = \Config\Services::session();        
-        $this->session->start();
-
-        $result = false;
-        if($cpf && $password){
-            $db = db_connect();
-                $builder = $db->table('user');
-                $builder->where('cpf', $cpf);
-                $builder->where('password', md5($password));
-                $result = $builder->get()->getRow();
-            $db->close();
-
-            if(isset($result->name) && $result->name && isset($result->email) && $result->email){
-                $newdata = [
-                    'username'  => $result->name,
-                    'email'     => $result->email,
-                    'logged_in' => TRUE
-                ];
-                $this->session->set($newdata);
-            }
-        }
+        $db = db_connect();
+        $builder = $db->table('log');
+        $builder->select('perfil.name as perfil');
+        $builder->select('log.*');
+        $builder->join('perfil','perfil.id = log.id_perfil');
+        $query = $builder->get();
+        //$result = $builder->get()->getRow();
+        $db->close();
+        $result = $query->getResultArray();
         return $result;
     }
 }
