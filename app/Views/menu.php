@@ -7,7 +7,7 @@
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
-        <a class="nav-link" href="<?php echo base_url('billing');?>">Atendimentos</a>
+        <a class="nav-link" href="<?php echo base_url('billing');?>">Cobrança</a>
       </li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -32,14 +32,39 @@
         <a class="nav-link" href="<?php echo base_url('login/logout');?>">Sair</a>
       </li>
     </ul>
-    
-    <?php echo form_open($search, 'class="form-inline my-2 my-lg-0" id="searchForm"'); ?>
-        <input name='search' class="form-control mr-sm-2" type="search" placeholder="digite uma palavra" aria-label="Search">
-        <button class="btn btn-outline-success my-2 my-sm-0" 
-                id="btnsearch" 
-                type="button" 
-                onclick='document.getElementById("searchForm").submit();'>Pesquisa</button>
-    <?php echo form_close(); ?>    
+    <?php if(isset($search)){?>
+      <?php //print_r($user);?>
+      <?php echo form_open($search, 'class="form-inline my-2 my-lg-0" id="searchForm"'); ?>
+          <?php if(isset($search_log) && $search_log){ ?>
+                <select class="form-control mr-sm-2" name="user_search" >
+                    <option></option>
+                    <?php if(isset($user) && $user){ ?>
+                        <?php foreach($user as $ur){?>
+                          <?php 
+                              if($ur['id_perfil']==1){
+                                $perfil = 'Administrador';
+
+                              }elseif($ur['id_perfil']==2){
+                                $perfil = 'Cliente';
+
+                              }elseif($ur['id_perfil']==3){
+                                $perfil = 'Motoboy';
+                              }                          
+                          ?>
+                          <option value="<?php echo $ur['id'];?>" <?php echo isset($search_data['user_search']) && $search_data['user_search'] == $ur['id']?'selected':'';?> ><?php echo $ur['name']."-".$perfil;?></option>
+                        <?php } ?>
+                      <?php } ?>                   
+                </select>
+                
+                <input name='date_search' class="form-control mr-sm-2" type="text" id="datepicker" size=7 value="<?php echo isset($search_data['date_search'])?$search_data['date_search']:'';?>">
+          <?php } ?>
+          <input name='search' class="form-control mr-sm-2" type="search" placeholder="digite uma palavra" aria-label="Search" value="<?php echo isset($search_data['search'])?$search_data['search']:'';?>">
+          <button class="btn btn-outline-success my-2 my-sm-0" 
+                  id="btnsearch" 
+                  type="button" 
+                  onclick='document.getElementById("searchForm").submit();'>Pesquisa</button>
+      <?php echo form_close(); ?>  
+    <?php } ?>  
   </div>
 </nav>
     <!--nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -81,3 +106,21 @@
         </form>
         </div>
     </nav-->
+<link rel="stylesheet" href="//code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="/resources/demos/style.css">
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js"></script>
+<script>  
+    $( function() {
+    $( "#datepicker" ).datepicker({
+      dateFormat: 'dd/mm/yy',
+      dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
+      dayNamesMin: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S', 'D'],
+      dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+      monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+      monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+      nextText: 'Proximo',
+      prevText: 'Anterior'
+    });
+  } );
+</script>

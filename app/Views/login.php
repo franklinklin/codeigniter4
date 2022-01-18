@@ -1,3 +1,4 @@
+<?php //echo 'Versão Atual do PHP: ' . phpversion();?>
 
 <!doctype html>
 <html lang="en">
@@ -64,9 +65,9 @@
   <!--p class="text-muted">Para acessar preencha os campos abaixo.</p-->
   <p class="text-muted">Sistema de cobrança</p>
   <label for="inputEmail" class="sr-only">E-mail</label>
-  <input type="text" id="cpf" class="form-control" placeholder="CPF" required autofocus>
+  <input type="text" id="cpf" name="cpf" class="form-control" placeholder="CPF" required autofocus onkeyup="maskdocument('cpf')" onkeypress="isNumber();maskdocument('cpf');" maxlength="14">
   <label for="inputPassword" class="sr-only">Senha</label>
-  <input type="password" id="inputPassword" class="form-control" placeholder="Senha" required>
+  <input type="password" id="inputPassword" class="form-control" placeholder="Senha" required onkeypress="if(event.key === 'Enter') check()">
   <!--div class="checkbox mb-3">
     <label>
       <input type="checkbox" value="remember-me"> Remember me
@@ -76,8 +77,6 @@
   <!--p class="mt-5 mb-3 text-muted">Não tem conta? <b>CADASTRE-SE</b></p-->
 </form>
 <br>
-
-    
 
 <script>
 
@@ -94,9 +93,12 @@
             $('#inputPassword').focus();
             return false;
         }
-        $.post("login/check",{cpf: cpf.value,password: password.value}, function(response){            
+        $.post("login/check",{cpf: cpf.value,password: password.value}, function(response){ 
+          
+          console.log(response);
+
             if(response !='false'){
-                window.location.href = "/client";
+                window.location.href = "/billing";
             }else{
             
                 $('#response').html('<div class="alert alert-danger alert-dismissible fade show" role="alert"><strong>Acesso Negado!</strong> <button onclick="close_alert()" type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
@@ -106,6 +108,36 @@
 
     function close_alert(){
         $('#response').html('');
+    }
+
+    function maskdocument(id){
+        var cpf = document.querySelector('[name="'+id+'"]');
+        var doc ='';
+
+        if(cpf.value.length ==3){
+            doc = cpf.value;
+            cpf.value = doc+".";
+        }
+
+        if(cpf.value.length ==7){
+            doc = cpf.value;
+            cpf.value = doc+".";
+        }
+
+        if(cpf.value.length ==11){
+            doc = cpf.value;
+            cpf.value = doc+"-";
+        }
+    }
+
+    function isNumber(evt) {
+        evt = (evt) ? evt : window.event;
+        var charCode = (evt.which) ? evt.which : evt.keyCode;
+        if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 46) {
+            evt.preventDefault();
+        } else {
+            return true;
+        }
     }
 </script>    
     

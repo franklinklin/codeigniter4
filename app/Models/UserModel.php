@@ -64,10 +64,13 @@ class UserModel extends Model
                 $result = $builder->get()->getRow();
             $db->close();
 
-            if(isset($result->name) && $result->name && isset($result->email) && $result->email){
+            if(isset($result->name) && $result->name){
                 $newdata = [
+                    'menu'  => $result->id_perfil,
+                    'cpf'  => $result->cpf,
                     'username'  => $result->name,
                     'email'     => $result->email,
+                    'id'        => $result->id,
                     'logged_in' => TRUE
                 ];
                 $this->session->set($newdata);
@@ -75,4 +78,74 @@ class UserModel extends Model
         }
         return $result;
     }
+
+    function edit($data){
+        
+        $db = db_connect();
+        $builder = $db->table('user');
+        $edit = [
+            'name' => $data['name'],
+            //'email' => $data['email'],
+            'id_perfil' => $data['id_perfil'],
+            'password' => md5($data['password']),
+            'cpf' => $data['cpf']
+        ];        
+        $builder->where('id', $data['id']);
+        $builder->update($edit);
+        return true;
+    }
+
+    function lastId(){
+        $db = db_connect();
+        $query = $db->query('SELECT id FROM user order by id desc limit 1;');
+        $last_row = $query->getRow();
+        return $last_row->id;
+    }
+
+    function getCpf($cpf){
+        $db = db_connect();
+        $query = $db->query('SELECT id FROM user WHERE cpf ="'.$cpf.'"');
+        $last_row = $query->getRow();
+        return $last_row->id;
+    }
+
+    function ajaxGetCpf($cpf){
+        $db = db_connect();
+        $query = $db->query('SELECT * FROM user WHERE cpf ="'.$cpf.'"');
+        $last_row = $query->getRow();
+        return $last_row->id;
+    }    
+
+    function checkCpf($cpf,$id_perfil){
+        $db = db_connect();
+        if($id_perfil ==2){
+            $query = $db->query("SELECT * FROM motoboy WHERE document ='".$cpf."'");        
+        }elseif($id_perfil ==3){
+            $query = $db->query("SELECT * FROM client WHERE document ='".$cpf."'");
+        }    
+        $list = $query->getRow();
+        return $list;
+    }
+
+    function checkDuplicate($cpf,$id_perfil){
+        $db = db_connect();
+        $query = $db->query("SELECT * FROM user WHERE cpf ='".$cpf."' AND id_perfil='".$id_perfil."'");  
+        $list = $query->getRow();     
+        return $list; 
+    }
+
+    function save_user($data){
+        $db = db_connect();
+        $builder = $db->table('user');
+
+        $data = [
+            'cpf' => $data['cpf'],
+            'name' => $data['name'],
+            'id_perfil' => $data['id_perfil'],
+            'id_user' => $data['id_user'],
+            'password' => md5($data['password'])
+        ];
+        $builder->insert($data);
+        return true;
+    }    
 }

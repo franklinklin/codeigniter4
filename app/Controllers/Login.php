@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Models\LoginModel;
 use App\Models\UserModel;
+use App\Models\LogModel;
 
 class Login extends BaseController
 {
@@ -46,12 +47,12 @@ class Login extends BaseController
 		}
 
         if ($search == '') {
-			$paginateData = $this->loginModel->paginate(10);
+			$paginateData = $this->loginModel->paginate(1000);
 		} else {
 			$paginateData = $this->loginModel->select('*')
 				->orLike('email', $search)
 				->orLike('password', $search)    			
-				->paginate(10);
+				->paginate(1000);
 		}
 
         return view('login',
@@ -102,14 +103,26 @@ class Login extends BaseController
     function check(){
 
         $post = $this->request->getPost();
+        
         if(!isset($post['cpf']) || $post['cpf']=='' || !isset($post['password']) || $post['password']==''){
             echo json_encode(false);
             die();
         }
         $userModel = new UserModel();
-        $result = $userModel->checkLogin($post['cpf'], $post['password']);        
-
+        $result = $userModel->checkLogin($post['cpf'], $post['password']);  
+            
         if($result){
+            //use App\Models\LogModel;
+            //$data['id_perfil'] = $result->id_perfil;
+            $data['id_perfil'] = 3;
+            $data['id_user'] = $result->id;
+            $data['id_module'] = 1;
+            $data['date'] = date('Y-m-d H:i:s');
+            $data['action'] = 'Efetuou o login no sistema';
+
+            $logModel = new LogModel();
+            $logModel->save($data);
+
             echo json_encode(true);
         }else{            
             echo json_encode(false);

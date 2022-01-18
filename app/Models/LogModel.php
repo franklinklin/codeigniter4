@@ -60,4 +60,62 @@ class LogModel extends Model
         $result = $query->getResultArray();
         return $result;
     }
+    
+    function log($data){
+
+        $db = db_connect();
+        $builder = $db->table('log');
+        //$builder->save($data);
+
+        $builder->set('id_perfil', $data['id_perfil']);
+        $builder->set('id_user', $data['id_user']);
+        $builder->set('id_module',  $data['id_module']);
+        $builder->set('action', $data['action']);
+        $builder->insert();
+    }
+
+    function getUser(){
+        $db = db_connect();
+        $query = $db->query('SELECT * FROM user');
+        $list = $query->getResultArray();
+        return $list;
+    }
+
+    function search_where($data){
+
+        $date_search = str_replace("/", "-", $data['date_search']);
+       
+        $db = db_connect();
+        $sql ="
+            SELECT 
+            log.id,
+            perfil.name as perfil,
+            user.id_perfil,
+            user.name as user,
+            module.name as module,
+            log.action,
+            log.date
+            FROM log
+            INNER JOIN user ON user.id = log.id_user
+            INNER JOIN perfil ON perfil.id = user.id_perfil
+            INNER JOIN module ON module.id = log.id_module
+            WHERE
+            (user.name LIKE '%".$data['search']."%' OR
+             perfil.name LIKE '%".$data['search']."%' OR
+             log.date LIKE '%".$data['search']."%' OR
+             module.name LIKE '%".$data['search']."%' OR
+             log.action LIKE '%".$data['search']."%')";
+
+             if($data['date_search']){
+                $sql .= " AND log.date >= '".date('Y-m-d', strtotime($date_search))." 00:00:00'";
+                $sql .= " AND log.date <= '".date('Y-m-d', strtotime($date_search))." 23:59:59'";
+             }
+             if($data['user_search']){                
+                $sql .= " AND user.id = ".$data['user_search']."";
+             }
+              
+        $query = $db->query($sql);
+        $list = $query->getResultArray();
+        return $list;
+    }
 }

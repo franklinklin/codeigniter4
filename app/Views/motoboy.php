@@ -20,7 +20,7 @@
 <body>
 
     <?php include("menu.php");?>        
-
+    <?php //echo"<pre>";print_r($clients);?>
     <div class="container mt-3">
                     
         <div class="card">
@@ -61,7 +61,7 @@
                 <?php endforeach;?>
             <?php }?>
         </table>
-        <?php echo $pager->links('default','bootstrap_pagination');?>
+        <?php //echo $pager->links('default','bootstrap_pagination');?>
         
         </div>
         </div>

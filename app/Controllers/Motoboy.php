@@ -40,7 +40,7 @@ class Motoboy extends BaseController
 		}
 
         if ($search == '') {
-			$paginateData = $this->motoboyModel->paginate(10);
+			$paginateData = $this->motoboyModel->paginate(1000);
 		} else {
 			$paginateData = $this->motoboyModel->select('*')
 				->orLike('name', $search)
@@ -53,7 +53,7 @@ class Motoboy extends BaseController
                 ->orLike('city', $search)
                 ->orLike('district', $search)
                 ->orLike('phone', $search)
-				->paginate(10);
+				->paginate(1000);
 		}
 
         return view($this->controller,
@@ -88,13 +88,50 @@ class Motoboy extends BaseController
 
     public function save(){
       
-        if($this->motoboyModel->save($this->request->getPost())){
-            return view("messages",[
-                'message' => $this->message.' salvo com sucesso',
-                'back'=> $this->controller
+        $post = $this->request->getPost();        
+        $motoboy = $post;
+
+        if(isset($post['document']) && $post['document'] ==''){
+            $required[] = 'CPF';
+        }
+
+        if(isset($post['email']) && $post['email'] ==''){
+            $required[] = 'E-mail';
+        }
+
+        if(isset($post['name']) && $post['name'] ==''){
+            $required[] = 'Nome';
+        }
+
+        if(isset($post['phone']) && $post['phone'] ==''){
+            $required[] = 'Contato';
+        }
+
+        if(isset($post['license_plate']) && $post['license_plate'] ==''){
+            $required[] = 'Placa da moto';
+        }
+
+        if(isset($post['cnh']) && $post['cnh'] ==''){
+            $required[] = 'CNH';
+        }        
+
+        if(isset($required)){
+            
+            return view($this->form,[
+                'required' => $required,
+                'search' => $this->controller,
+                'save' => $this->controller,
+                'user' => $motoboy
             ]);
-        } else {
-            echo "Ocorreu um erro";
+        }else{
+            if($this->motoboyModel->save($this->request->getPost())){
+                return view("messages",[
+                    'message' => $this->message.' salvo com sucesso',
+                    'back'=> $this->controller
+                ]);
+            } else {
+                echo "Ocorreu um erro";
+            }
         }
     }
 

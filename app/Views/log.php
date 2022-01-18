@@ -51,7 +51,7 @@
                 <?php endforeach;?>
             <?php }?>
         </table>
-        <?php echo $pager->links('default','bootstrap_pagination');?>
+        <?php //echo $pager->links('default','bootstrap_pagination');?>
         
         </div>
         </div>

@@ -33,6 +33,7 @@ class User extends BaseController
         $teste = $this->session->get('email');
         echo"<pre>";print_r($teste);
     }
+
     public function index()
     {   
         $request = service('request');
@@ -44,12 +45,12 @@ class User extends BaseController
 		}
 
         if ($search == '') {
-			$paginateData = $this->model->paginate(10);
+			$paginateData = $this->model->paginate(1000);
 		} else {
 			$paginateData = $this->model->select('*')
 				->orLike('name', $search)				
                 ->orLike('email', $search)
-				->paginate(10);
+				->paginate(1000);
 		}
 
         return view($this->controller,
@@ -83,14 +84,98 @@ class User extends BaseController
     }
 
     public function save(){
-      
-        if($this->model->save($this->request->getPost())){
-            return view("messages",[
-                'message' => $this->message.' salvo com sucesso',
-                'back'=> $this->controller
+
+        $post = $this->request->getPost();
+        $user = $post;
+        
+        if(isset($post['id']) && $post['id'] ==''){
+            $check = $this->model->checkDuplicate($post['cpf'],$post['id_perfil']);
+            if($check){
+                $required[] = 'Já existe um cadastro com este perfil e CPF';    
+            }
+        }
+        /*if(isset($post['name']) && $post['name'] ==''){
+            $required[] = 'Nome do usuário';
+        }*/
+
+        /*if(isset($post['email']) && $post['email'] ==''){
+            $required[] = 'E-mail';
+        }*/
+
+        if(isset($post['id_perfil']) && $post['id_perfil'] ==''){
+            $required[] = 'Perfil';
+        }
+
+        if(isset($post['cpf']) && $post['cpf'] ==''){
+            $required[] = 'CPF';
+        }else{
+            if($post['id_perfil']!=1){                
+                $checkCpf = $this->model->checkCpf($post['cpf'],$post['id_perfil']);
+                if($checkCpf == false){
+                    $required[] = 'este CPF não esta cadastrado';
+                }else{
+                    $dataUser = $checkCpf;
+                }
+            }
+        }
+
+        if(isset($post['password']) && $post['password'] ==''){
+            $required[] = 'Senha';
+        }else{
+            
+            if(strlen($post['password']) < 6){
+                $required[] = 'a senha deve ter no mínimo 6 dígitos';
+            }
+        }
+
+        if(isset($post['confirm_password']) && $post['confirm_password'] ==''){
+            $required[] = 'Confirmar senha';
+        }
+
+        if(isset($post['confirm_password']) && isset($post['password']) && $post['password'] != $post['confirm_password']){
+            $required[] = 'Senha não confere';
+        }
+
+        if(isset($required)){
+            
+            return view($this->form,[
+                'required' => $required,
+                'search' => $this->controller,
+                'save' => $this->controller,
+                'user' => $user
             ]);
-        } else {
-            echo "Ocorreu um erro";
+        }else{
+
+            if(isset($post['id']) && $post['id']){
+
+                if($this->model->edit($this->request->getPost())){
+                    return view($this->form,[
+                        'save' => $this->controller,
+                        'search' => $this->controller,
+                        'user' => $user,
+                        'success_edit'=> true
+                    ]);
+                } else {
+                    echo "Ocorreu um erro";
+                }
+            }else{
+
+                $post =  $this->request->getPost();    
+                
+                if($this->model->save_user($post)){
+                    
+                    $lastId = $this->model->getCpf($post['cpf']);
+                    
+                    return view($this->form,[
+                        'save' => $this->controller,
+                        'search' => $this->controller,
+                        'user' => $this->model->find($lastId),
+                        'success'=> true
+                    ]);
+                } else {
+                    echo "Ocorreu um erro";
+                }
+            }
         }
     }
 
@@ -129,5 +214,17 @@ class User extends BaseController
         ];
         $this->session->set($newdata);
         die('bye');
+    }
+
+    function ajaxLoadCpf(){
+        
+        $post = $this->request->getPost();
+        $checkCpf = $this->model->checkCpf($post['cpf'],$post['id_perfil']);
+        if($checkCpf == false){
+            $result = false;
+        }else{
+            $result = $checkCpf;
+        }
+        echo json_encode($result);
     }
 }

@@ -11,6 +11,9 @@
     <?php include("menu.php");?>   
     <div class="container mt-2">
 
+    <?php include("success.php"); ?>
+    <?php include("required_filds.php"); ?>
+
     <?php echo form_open($save.'/save'); ?>
     <div class="card">
             <div class="card-header">
@@ -31,19 +34,31 @@
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="phone">Contato</label>
-                    <input type="text" name="phone" class="form-control" value="<?php echo isset($user['phone'])?$user['phone']:'';?>">
+                    <input type="text" name="phone" class="form-control" value="<?php echo isset($user['phone'])?$user['phone']:'';?>"  onkeyup="maskphone('phone')" onkeypress="isNumber()" maxlength="15">
                 </div>
                 <div class="form-group col-md-6">
                 <label for="document">CPF</label>
-                    <input type="text" name="document" class="form-control" value="<?php echo isset($user['document'])?$user['document']:'';?>">
+                    <input type="text" name="document" class="form-control" value="<?php echo isset($user['document'])?$user['document']:'';?>" onkeyup="maskdocument()" onkeypress="isNumber();maskdocument();" maxlength="14">
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="phone2">2º Contato</label>
-                    <input type="text" name="phone2" class="form-control" value="<?php echo isset($user['phone2'])?$user['phone2']:'';?>">
+                    <input type="text" name="phone2" class="form-control" value="<?php echo isset($user['phone2'])?$user['phone2']:'';?>"  onkeyup="maskphone('phone2')" onkeypress="isNumber()" maxlength="15">
                 </div>
                 
+                <div class="form-group col-md-6">
+                    <label for="exampleFormControlSelect1"><b>Motoboy</b></label>
+                    <select class="form-control" name="id_motoboy">
+                        <?php if(isset($motoboys)){?>
+                            <?php foreach($motoboys as $moto){?>
+                                <option value="<?php echo $moto['id'];?>" <?php echo isset($user['id_motoboy']) && $moto['id']==$user['id_motoboy']?'selected':'';?> >
+                                    <?php echo $moto['name']; ?>
+                                </option>
+                            <?php } ?>
+                        <?php }?>
+                    </select>
+                </div>
             </div>
             
              </div>    
@@ -61,7 +76,7 @@
                     </div>
                     <div class="form-group col-md-6">
                         <label for="number">Número</label>
-                        <input type="text" name="number" class="form-control" value="<?php echo isset($user['number'])?$user['number']:'';?>">
+                        <input type="text" name="number" class="form-control" value="<?php echo isset($user['number'])?$user['number']:'';?>" onkeypress="isNumber()" onkeyup="isNumber()">
                     </div>
                 </div>
                 <div class="form-row">
@@ -99,7 +114,7 @@
                     </div>
                     <div class="form-group col-md-6">
                         <label for="number_business">Número</label>
-                        <input type="text" name="number_business" class="form-control" value="<?php echo isset($user['number_business'])?$user['number_business']:'';?>">
+                        <input type="text" name="number_business" class="form-control" value="<?php echo isset($user['number_business'])?$user['number_business']:'';?>"  onkeypress="isNumber()" onkeyup="isNumber()">
                     </div>
                 </div>
                 <div class="form-row">
@@ -129,7 +144,51 @@
 
     <?php echo form_close(); ?>
     </div>
+<script>
+    function isNumber(evt) {
+            evt = (evt) ? evt : window.event;
+            var charCode = (evt.which) ? evt.which : evt.keyCode;
+            if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 46) {
+                evt.preventDefault();
+            } else {
+                return true;
+            }
+        }
+        function maskdocument(){
+            var cpf = document.querySelector('[name="document"]');
+            var doc ='';
 
+            if(cpf.value.length ==3){
+                doc = cpf.value;
+                cpf.value = doc+".";
+            }
+
+            if(cpf.value.length ==7){
+                doc = cpf.value;
+                cpf.value = doc+".";
+            }
+
+            if(cpf.value.length ==11){
+                doc = cpf.value;
+                cpf.value = doc+"-";
+            }
+        }
+
+        function maskphone(id){
+            var phone = document.querySelector('[name="'+id+'"]');
+            var num ='';
+
+            if(phone.value.length ==2){
+                num = phone.value;
+                phone.value = "("+num+") ";
+            }
+
+            if(phone.value.length ==10){
+                num = phone.value;
+                phone.value = num+"-";
+            }
+        }
+</script>
     
 </body>
 </html>

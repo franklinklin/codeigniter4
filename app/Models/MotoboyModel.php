@@ -56,4 +56,11 @@ class MotoboyModel extends Model
     protected $afterFind            = [];
     protected $beforeDelete         = [];
     protected $afterDelete          = [];
+
+    function getMotoboys(){
+        $db = db_connect();
+        $query = $db->query("SELECT id, name FROM motoboy");
+        $list = $query->getResultArray();
+        return $list;
+    }
 }

@@ -32,7 +32,9 @@ class ClientModel extends Model
         'city_business',
         'district',
         'district_business',
-        'phone'
+        'phone',
+        'phone2',
+        'id_motoboy'
     ];
 
     // Dates

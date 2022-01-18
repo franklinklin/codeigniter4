@@ -4,10 +4,14 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\ClientModel;
+use App\Models\MotoboyModel;
 
 class Client extends BaseController
 {
     private $clientModel;
+    private $form;
+    private $controller;
+    private $message;
 
     public function __construct()
     {
@@ -20,7 +24,11 @@ class Client extends BaseController
             die();
         }
         
-        $this->clientModel = new clientModel();   
+        $this->clientModel = new clientModel();  
+        $this->controller = 'client';
+        $this->form = 'client_form';
+        $this->message = 'Cliente';
+        $this->motoboyModel = new motoboyModel(); 
     }
     
     public function index()
@@ -34,7 +42,7 @@ class Client extends BaseController
 		}
 
         if ($search == '') {
-			$paginateData = $this->clientModel->paginate(10);
+			$paginateData = $this->clientModel->paginate(1000);
 		} else {
 			$paginateData = $this->clientModel->select('*')
 				->orLike('name', $search)
@@ -47,14 +55,15 @@ class Client extends BaseController
                 ->orLike('city', $search)
                 ->orLike('district', $search)
                 ->orLike('phone', $search)
-				->paginate(10);
+				->paginate(1000);
 		}
-
+        
         return view('client',
                         [   'form' => 'client',
                             'search' => 'client',
                             'clients' => $paginateData,
-                            'pager' => $this->clientModel->pager
+                            'pager' => $this->clientModel->pager,
+                            'motoboys' => $this->motoboyModel->getMotoboys()
                         ]
                    );
     }
@@ -74,21 +83,61 @@ class Client extends BaseController
     }
 
     public function create(){
+
         return view('client_form',[
-                                    'search' => 'client',
-                                    'save' => 'client'
-                                ]);
-    }
+            'search' => 'client',
+            'save' => 'client',
+            'motoboys' => $this->motoboyModel->getMotoboys()
+        ]);
+}
 
     public function save(){
       
-        if($this->clientModel->save($this->request->getPost())){
-            return view("messages",[
-                'message' => 'Cliente salvo com sucesso',
-                'back'=>'client'
+        $post = $this->request->getPost();        
+        $client = $post;
+
+        if(isset($post['name']) && $post['name'] ==''){
+            $required[] = 'Nome';
+        }
+
+        if(isset($post['document']) && $post['document'] ==''){
+            $required[] = 'CPF';
+        }
+
+        if(isset($post['email']) && $post['email'] ==''){
+            $required[] = 'E-mail';
+        }        
+
+        if(isset($post['phone']) && $post['phone'] ==''){
+            $required[] = 'Contato';
+        }
+
+        if(isset($post['zip_code']) && $post['zip_code'] ==''){
+            $required[] = 'CEP';
+        }
+
+        if(isset($post['number']) && $post['number'] ==''){
+            $required[] = 'Numero';
+        }        
+
+        if(isset($required)){
+            
+            return view($this->form,[
+                'required' => $required,
+                'search' => $this->controller,
+                'save' => $this->controller,
+                'user' => $client
             ]);
-        } else {
-            echo "Ocorreu um erro";
+        }else{
+
+            if($this->clientModel->save($this->request->getPost())){
+                return view("messages",[
+                    'message' => 'Cliente salvo com sucesso',
+                    'back'=>'client'
+                ]);
+            } else {
+                echo "Ocorreu um erro";
+            }
         }
     }
 
@@ -97,7 +146,8 @@ class Client extends BaseController
             [
                 'user'=> $this->clientModel->find($id),
                 'save'=>'client',
-                'search'=>'client'
+                'search'=>'client',
+                'motoboys' => $this->motoboyModel->getMotoboys()
             ]
         );  
     }

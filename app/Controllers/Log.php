@@ -29,25 +29,30 @@ class Log extends BaseController
     {   
         $request = service('request');
 		$searchData = $request->getPost();
-
+        
 		$search = "";
 		if (isset($searchData) && isset($searchData['search'])) {
 			$search = $searchData['search'];
 		}
-
-        if ($search == '') {
+        if(!isset($searchData['user_search'])){
+            $searchData['user_search'] ='';
+        }
+        if(!isset($searchData['date_search'])){
+            $searchData['date_search'] ='';
+        }
+        if ($search == '' && $searchData['user_search'] == '' && $searchData['date_search'] == '') {
             
             $paginateData = $this->model->select('log.*')
                 ->select('perfil.name as perfil')
                 ->select('user.name as user')
                 ->select('module.name as module')
                 ->join('user','user.id = log.id_user')			
-                ->join('perfil','perfil.id = log.id_perfil')
+                ->join('perfil','perfil.id = user.id_perfil')
                 ->join('module','module.id = log.id_module')
                 ->orderBy('log.id', 'DESC')
-				->paginate(10);
+				->paginate(1000);
 		} else {
-			$paginateData = $this->model->select('log.*')
+			/*$paginateData = $this->model->select('log.*')
                 ->select('perfil.name as perfil')
                 ->select('user.name as user')
                 ->select('module.name as module')
@@ -57,22 +62,26 @@ class Log extends BaseController
                 ->orLike('module.name', $search)
                 ->orLike('log.action', $search)
                 ->join('user','user.id = log.id_user')
-                ->join('perfil','perfil.id = log.id_perfil')
-                ->join('module','module.id = log.id_module')
+                ->join('perfil','perfil.id = user.id_perfil')
+                ->join('module','module.id = log.id_module')                
                 ->orderBy('log.id', 'DESC')
-				->paginate(10);
+				->paginate(1000);*/
+                $paginateData = $this->model->search_where($searchData);
 		}
 
         return view($this->controller,
                         [   'form' => $this->controller,
                             'search' => $this->controller,
                             'logs' => $paginateData,
-                            'pager' => $this->model->pager
+                            'pager' => $this->model->pager,
+                            'search_log' => true,
+                            'user' => $this->model->getUser(),
+                            'search_data' => $searchData
                         ]
                    );
     }
 
-    public function save(){      
-        $this->motoboyModel->save($this->request->getPost());
-    }
+    /*public function log($data){      
+        $this->model->save($data);
+    }*/ 
 }

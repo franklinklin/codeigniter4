@@ -13,6 +13,9 @@
     <?php echo form_open($save.'/save'); ?>
     
     <div class="container mt-2">
+        
+        <?php include("success.php"); ?>
+        <?php include("required_filds.php"); ?>
 
         <div class="card">
             <div class="card-header">
@@ -32,11 +35,11 @@
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="perfil">Celular</label>
-                        <input type="text" name="phone" class="form-control" value="<?php echo isset($user['phone'])?$user['phone']:'';?>">
+                        <input type="text" name="phone" class="form-control" value="<?php echo isset($user['phone'])?$user['phone']:'';?>" onkeyup="maskphone()" onkeypress="isNumber()" maxlength="15">
                     </div>
                     <div class="form-group col-md-6">
                     <label for="perfil">CPF</label>
-                        <input type="text" name="document" class="form-control" value="<?php echo isset($user['document'])?$user['document']:'';?>">
+                        <input type="text" name="document" class="form-control" value="<?php echo isset($user['document'])?$user['document']:'';?>" onkeyup="maskdocument()" onkeypress="isNumber();maskdocument();" maxlength="14">
                     </div>
                 </div>
             </div>
@@ -54,7 +57,7 @@
                     </div>
                     <div class="form-group col-md-6">
                         <label for="perfil">Número</label>
-                        <input type="text" name="number" class="form-control" value="<?php echo isset($user['number'])?$user['number']:'';?>">
+                        <input type="text" name="number" class="form-control" value="<?php echo isset($user['number'])?$user['number']:'';?>" onkeypress="isNumber()" >
                     </div>
                 </div>
                 <div class="form-row">
@@ -98,7 +101,7 @@
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="perfil">Ano</label>
-                        <input type="text" name="year" class="form-control" value="<?php echo isset($user['year'])?$user['year']:'';?>">
+                        <input type="text" name="year" class="form-control" value="<?php echo isset($user['year'])?$user['year']:'';?>" onkeypress="isNumber()" maxlength="4">
                     </div>
                     <div class="form-group col-md-6">
                         <label for="perfil">Placa</label>
@@ -112,7 +115,52 @@
         <input type="submit" value="Salvar" class="btn btn-primary mt-2 mb-3">
         <?php echo form_close(); ?>
 
-    </div>      
+    </div>  
+    <script>
+        function isNumber(evt) {
+            evt = (evt) ? evt : window.event;
+            var charCode = (evt.which) ? evt.which : evt.keyCode;
+            if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 46) {
+                evt.preventDefault();
+            } else {
+                return true;
+            }
+        }
+        function maskdocument(){
+            var cpf = document.querySelector('[name="document"]');
+            var doc ='';
+
+            if(cpf.value.length ==3){
+                doc = cpf.value;
+                cpf.value = doc+".";
+            }
+
+            if(cpf.value.length ==7){
+                doc = cpf.value;
+                cpf.value = doc+".";
+            }
+
+            if(cpf.value.length ==11){
+                doc = cpf.value;
+                cpf.value = doc+"-";
+            }
+        }
+
+        function maskphone(){
+            var phone = document.querySelector('[name="phone"]');
+            var num ='';
+
+            if(phone.value.length ==2){
+                num = phone.value;
+                phone.value = "("+num+") ";
+            }
+
+            if(phone.value.length ==10){
+                num = phone.value;
+                phone.value = num+"-";
+            }
+        }
+    </script>    
 
 </body>
 </html>
