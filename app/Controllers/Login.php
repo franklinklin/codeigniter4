@@ -109,12 +109,12 @@ class Login extends BaseController
             die();
         }
         $userModel = new UserModel();
-        $result = $userModel->checkLogin($post['cpf'], $post['password']);  
-            
+     
+        $result = $userModel->checkLogin($post['cpf'], $post['password']);
+                    
         if($result){
             //use App\Models\LogModel;
-            //$data['id_perfil'] = $result->id_perfil;
-            $data['id_perfil'] = 3;
+            $data['id_perfil'] = $result->id_perfil;
             $data['id_user'] = $result->id;
             $data['id_module'] = 1;
             $data['date'] = date('Y-m-d H:i:s');

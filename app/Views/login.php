@@ -77,7 +77,11 @@
   <!--p class="mt-5 mb-3 text-muted">Não tem conta? <b>CADASTRE-SE</b></p-->
 </form>
 <br>
-
+<footer class="footer mt-auto py-3">
+    <div class="container">
+        <span class="text-muted"><a href="https://consultordevendassbc.com/" target="_blank">Criado por Consultor de Vendas.</a></span>
+    </div>
+</footer>
 <script>
 
     function check(){

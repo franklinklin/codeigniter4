@@ -26,6 +26,49 @@
         <div class="card">
             <div class="card-header">
                 Registro de ações dos usuários
+                <?php //print_r($total_motoboy);?>
+                <?php if($total_motoboy){?>
+                    <?php
+                    $soma_moto = 0;
+                    $pix_amount = 0;
+                    $especie_amount = 0;
+
+                       foreach($total_motoboy as $tmoto){
+
+                            if($tmoto['pix'] =='' && $tmoto['especie']==''){
+
+                                $amount = str_replace(".", "", $tmoto['amount']);
+                                $amount = str_replace(",", ".", $amount);                
+                                $soma_moto = $soma_moto + $amount;
+                            }else{
+                                if($tmoto['pix'] !=''){
+                                    $amount = str_replace(".", "", $tmoto['pix']);
+                                    $amount = str_replace(",", ".", $amount);                
+                                    $soma_moto = $soma_moto + $amount;
+
+                                    $pix = str_replace(".", "", $tmoto['pix']);
+                                    $pix = str_replace(",", ".", $pix);                
+                                    $pix_amount = $pix_amount + $pix;
+                                }
+
+                                if($tmoto['especie'] !=''){
+                                    $amount = str_replace(".", "", $tmoto['especie']);
+                                    $amount = str_replace(",", ".", $amount);                
+                                    $soma_moto = $soma_moto + $amount;
+
+                                    $especie = str_replace(".", "", $tmoto['especie']);
+                                    $especie = str_replace(",", ".", $especie);                
+                                    $especie_amount = $especie_amount + $especie;
+                                }
+                            }
+                       } 
+                    ?>
+                    <span style="float:right;">
+                        <b>PIX: </b> R$ <?php echo  number_format($pix_amount, 2, ',', '.');?>
+                        <b>Espécie: </b> R$ <?php echo  number_format($especie_amount, 2, ',', '.');?>
+                        <b>Total:</b> R$ <?php echo  number_format($soma_moto, 2, ',', '.');?>
+                    <span>
+                <?php } ?>
             </div>
             <div class="card-body">
 
@@ -57,6 +100,11 @@
         </div>
 
     </div>
+    <footer class="footer mt-auto py-3">
+        <div class="container">
+        <span class="text-muted"><a href="https://consultordevendassbc.com/" target="_blank">Criado por Consultor de Vendas.</a></span>
+        </div>
+    </footer>
     <script src="https://getbootstrap.com/docs/5.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 </body>
 </html>

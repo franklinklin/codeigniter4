@@ -53,8 +53,8 @@
                         <label for="exampleFormControlSelect1"><b>Perfil</b></label>
                         <select class="form-control" id="exampleFormControlSelect1" name="id_perfil" onchange="checkPerfil()">
                             <option></option>
-                            <option value="3" <?php echo isset($user['id_perfil']) && $user['id_perfil']==3?'selected':'';?>>Cliente</option>
-                            <option value="2" <?php echo isset($user['id_perfil']) && $user['id_perfil']==2?'selected':'';?>>Motoboy</option>
+                            <option value="2" <?php echo isset($user['id_perfil']) && $user['id_perfil']==2?'selected':'';?>>Cliente</option>
+                            <option value="3" <?php echo isset($user['id_perfil']) && $user['id_perfil']==3?'selected':'';?>>Motoboy</option>
                             <option value="1" <?php echo isset($user['id_perfil']) && $user['id_perfil']==1?'selected':'';?>>Administrador</option>
                         </select>
                     </div>
@@ -91,7 +91,11 @@
         </div>    
         </div>
     </div>
-
+    <footer class="footer mt-auto py-3">
+        <div class="container">
+        <span class="text-muted"><a href="https://consultordevendassbc.com/" target="_blank">Criado por Consultor de Vendas.</a></span>
+        </div>
+    </footer>
         
 </body>
 </html>

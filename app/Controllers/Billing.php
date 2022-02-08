@@ -19,7 +19,7 @@ class Billing extends BaseController
         $this->session->start();
 
         $session = $this->session->get(); 
-                    
+        
         if(!isset($session['logged_in']) || $session['logged_in'] == false){
             header("Location:".base_url());
             die();
@@ -38,7 +38,7 @@ class Billing extends BaseController
 
     public function index()
     {   
-        if($this->menu ==3){
+        if($this->menu ==2){
             
             return view('perfil_client_list',[
                 'search' => $this->controller,
@@ -47,7 +47,7 @@ class Billing extends BaseController
             die();
         }
 
-        if($this->menu ==2){
+        if($this->menu ==3){
             $colletc = $this->model->getCollect($this->cpf);          
             return view('perfil_motoboy',[
                 'search' => $this->controller,
@@ -205,6 +205,14 @@ class Billing extends BaseController
             die();
        }
 
+       $data['id_perfil'] = $this->menu;
+       $data['id_user'] = $this->id_user;
+       $data['id_module'] = 7;
+       $data['date'] = date('Y-m-d H:i:s');
+       $data['action'] = 'acessou emprestimo id: '.$id;
+       $logModel = new LogModel();
+       $logModel->save($data);
+
         return view('perfil_client',[
             'billing'=> $this->model->find($id),
             'list_installments'=> $this->model->list_installments($id),
@@ -212,16 +220,30 @@ class Billing extends BaseController
         ]);
     }
 
-    public function detail_motoboy($id){
+    public function detail_motoboy($id, $check_redirect=1){
 
         $check = $this->model->checkCpfIdBillingMotoboy($this->cpf,$id);       
         if($check->id < 1){
              header("Location:".base_url('billing'));
              die();
         }
- 
+
+        if($check_redirect != 2){
+            $data['id_perfil'] = $this->menu;
+            $data['id_user'] = $this->id_user;
+            $data['id_module'] = 7;
+            $data['date'] = date('Y-m-d H:i:s');
+            $data['action'] = 'acessou emprestimo id: '.$id;
+            $logModel = new LogModel();
+            $logModel->save($data);
+        }
+
+        $billing = $this->model->find($id);
+        $client = $this->model->ajaxGetCpf($billing['document']);            
+        
          return view('perfil_client',[
-             'billing'=> $this->model->find($id),
+             'billing'=> $billing,
+             'client'=> $client,
              'list_installments'=> $this->model->list_installments($id),
              'detail_id'=>$id,
              'perfil_moto'=>true
@@ -230,19 +252,34 @@ class Billing extends BaseController
 
     public function payment(){
         
+        $id = $this->request->getPost('detail_id'); 
+        $id_installment = $this->request->getPost('id_installment'); 
+
+        $data['id_perfil'] = $this->menu;
+        $data['id_user'] = $this->id_user;
+        $data['id_module'] = 7;
+        $data['date'] = date('Y-m-d H:i:s');
+        $data['action'] = 'Sinalizou o pagamento id:'.$id.' parcela:'.$id_installment;
+        $logModel = new LogModel();
+        $logModel->save($data);
+
         if($this->model->payment($this->request->getPost())){
-            header("Location:".base_url('billing/detail/'.$this->request->getPost('detail_id')));
+            header("Location:".base_url('billing/detail/'.$id));
             die();
         }
     }
 
     public function confirm_payment(){
 
+        $id_installment = $this->request->getPost('id_installment');
+        $detail_id = $this->request->getPost('detail_id');
+
         $data['id_perfil'] = $this->menu;
         $data['id_user'] = $this->id_user;
+        $data['id_installment'] = $id_installment;
         $data['id_module'] = 6;
         $data['date'] = date('Y-m-d H:i:s');
-        $data['action'] = 'confirmou pagamento id:'.$this->request->getPost('id_installment');
+        $data['action'] = 'confirmou pagamento id:'.$detail_id.' parcela:'.$id_installment;
         $logModel = new LogModel();
         $logModel->save($data);
 
@@ -256,10 +293,28 @@ class Billing extends BaseController
             if($getAmountPaid){
                 $amountPaid = 0;
                 foreach($getAmountPaid as $paid){
-                    $amount = str_replace(".", "", $paid['amount']);
-                    $amount = str_replace(",", ".", $amount);                
-                    $amountPaid = $amountPaid + $amount;
+
+                    if($paid['pix'] =='' && $paid['especie']==''){
+
+                        $amount = str_replace(".", "", $paid['amount']);
+                        $amount = str_replace(",", ".", $amount);                
+                        $amountPaid = $amountPaid + $amount;
+                    }else{
+
+                        if(isset($paid['pix']) && $paid['pix'] !=''){
+                            $amount = str_replace(".", "", $paid['pix']);
+                            $amount = str_replace(",", ".", $amount);                
+                            $amountPaid = $amountPaid + $amount;
+                        }
+
+                        if(isset($paid['especie']) && $paid['especie'] !=''){
+                            $amount = str_replace(".", "", $paid['especie']);
+                            $amount = str_replace(",", ".", $amount);                
+                            $amountPaid = $amountPaid + $amount;
+                        }
+                    }    
                 }          
+                //echo $amountPaid;die();
                 $this->model->updateAmountPaid($detail_id,$amountPaid);                
             }
             
@@ -271,7 +326,7 @@ class Billing extends BaseController
                 $data['id'] = $this->request->getPost('id_installment');
                 $this->model->updateInstallments($data);
 
-                header("Location:".base_url('billing/detail_motoboy/'.$detail_id));
+                header("Location:".base_url('billing/detail_motoboy/'.$detail_id.'/2'));
             }else{    
                 header("Location:".base_url('billing/edit/'.$detail_id));
             }
@@ -373,10 +428,11 @@ class Billing extends BaseController
                     echo "Ocorreu um erro";
                 }
             }else{
-
+                
+                $post["contract_date"] = str_replace("/", "-", $post["contract_date"]);
                 $post['contract_date'] = date('Y-m-d', strtotime($post['contract_date']));                
                 $post['id_user'] = $client->id;
-                
+
                 if($this->model->save($post)){
 
                     $lastId = $this->model->lastId();
@@ -516,3 +572,9 @@ class Billing extends BaseController
         echo json_encode($result);
     }
 }
+
+
+/*
+-dominio
+permitir o administrador mudar a informação
+*/

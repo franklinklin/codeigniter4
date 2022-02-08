@@ -57,6 +57,7 @@
                 </select>
                 
                 <input name='date_search' class="form-control mr-sm-2" type="text" id="datepicker" size=7 value="<?php echo isset($search_data['date_search'])?$search_data['date_search']:'';?>">
+                <input name='date_search_end' class="form-control mr-sm-2" type="text" id="datepicker_end" size=7 value="<?php echo isset($search_data['date_search_end'])?$search_data['date_search_end']:'';?>">
           <?php } ?>
           <input name='search' class="form-control mr-sm-2" type="search" placeholder="digite uma palavra" aria-label="Search" value="<?php echo isset($search_data['search'])?$search_data['search']:'';?>">
           <button class="btn btn-outline-success my-2 my-sm-0" 
@@ -112,7 +113,7 @@
 <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js"></script>
 <script>  
     $( function() {
-    $( "#datepicker" ).datepicker({
+    $( "#datepicker, #datepicker_end" ).datepicker({
       dateFormat: 'dd/mm/yy',
       dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
       dayNamesMin: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S', 'D'],

@@ -29,7 +29,7 @@ class Log extends BaseController
     {   
         $request = service('request');
 		$searchData = $request->getPost();
-        
+        $total_motoboy = '';
 		$search = "";
 		if (isset($searchData) && isset($searchData['search'])) {
 			$search = $searchData['search'];
@@ -40,7 +40,10 @@ class Log extends BaseController
         if(!isset($searchData['date_search'])){
             $searchData['date_search'] ='';
         }
-        if ($search == '' && $searchData['user_search'] == '' && $searchData['date_search'] == '') {
+        if(!isset($searchData['date_search_end'])){
+            $searchData['date_search_end'] ='';
+        }
+        if ($search == '' && $searchData['user_search'] == '' && $searchData['date_search'] == '' && $searchData['date_search_end'] == '') {
             
             $paginateData = $this->model->select('log.*')
                 ->select('perfil.name as perfil')
@@ -66,8 +69,13 @@ class Log extends BaseController
                 ->join('module','module.id = log.id_module')                
                 ->orderBy('log.id', 'DESC')
 				->paginate(1000);*/
-                $paginateData = $this->model->search_where($searchData);
-		}
+            $paginateData = $this->model->search_where($searchData);
+
+            if($searchData['user_search']){
+                $total_motoboy = $this->model->get_total_motoboy($searchData);
+            }
+        }
+        
 
         return view($this->controller,
                         [   'form' => $this->controller,
@@ -76,7 +84,8 @@ class Log extends BaseController
                             'pager' => $this->model->pager,
                             'search_log' => true,
                             'user' => $this->model->getUser(),
-                            'search_data' => $searchData
+                            'search_data' => $searchData,
+                            'total_motoboy' => $total_motoboy
                         ]
                    );
     }

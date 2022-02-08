@@ -19,8 +19,8 @@ class LogModel extends Model
         'id_user',
         'id_module',
         'date',
-        'action'
-
+        'action',
+        'id_installment'
     ];
 
     // Dates
@@ -83,7 +83,13 @@ class LogModel extends Model
 
     function search_where($data){
 
-        $date_search = str_replace("/", "-", $data['date_search']);
+        if(isset($data['date_search']) && $data['date_search']){
+            $date_search = str_replace("/", "-", $data['date_search']);
+        }
+
+        if(isset($data['date_search_end']) && $data['date_search_end']){
+            $date_search_end = str_replace("/", "-", $data['date_search_end']);
+        }
        
         $db = db_connect();
         $sql ="
@@ -106,13 +112,54 @@ class LogModel extends Model
              module.name LIKE '%".$data['search']."%' OR
              log.action LIKE '%".$data['search']."%')";
 
-             if($data['date_search']){
-                $sql .= " AND log.date >= '".date('Y-m-d', strtotime($date_search))." 00:00:00'";
-                $sql .= " AND log.date <= '".date('Y-m-d', strtotime($date_search))." 23:59:59'";
-             }
-             if($data['user_search']){                
+            if(isset($data['date_search']) && $data['date_search']){
+                $sql .= " AND log.date >= '".date('Y-m-d', strtotime($date_search))." 00:00:00'";                
+            }
+            if(isset($data['date_search_end']) && $data['date_search_end']){
+                $sql .= " AND log.date <= '".date('Y-m-d', strtotime($date_search_end))." 23:59:59'";
+            }
+            if($data['user_search']){                
                 $sql .= " AND user.id = ".$data['user_search']."";
-             }
+            }
+              
+        $query = $db->query($sql);
+        $list = $query->getResultArray();
+        return $list;
+    }
+
+    function get_total_motoboy($data){
+
+        if(isset($data['date_search']) && $data['date_search']){
+            $date_search = str_replace("/", "-", $data['date_search']);
+        }
+
+        if(isset($data['date_search_end']) && $data['date_search_end']){
+            $date_search_end = str_replace("/", "-", $data['date_search_end']);
+        }
+        
+        $db = db_connect();
+        $sql ="
+            SELECT 
+            log.id,
+            perfil.id as id_perfil,            
+            installments.amount,
+            installments.pix,
+            installments.especie
+            FROM log
+            INNER JOIN user ON user.id = log.id_user
+            INNER JOIN perfil ON perfil.id = user.id_perfil
+            INNER JOIN installments ON installments.id = log.id_installment
+            WHERE
+            user.id = ".$data['user_search']."
+            AND installments.status = 3";
+
+            if($data['date_search']){
+                $sql .= " AND log.date >= '".date('Y-m-d', strtotime($date_search))." 00:00:00'";               
+            }
+
+            if(isset($data['date_search_end']) && $data['date_search_end']){
+                $sql .= " AND log.date <= '".date('Y-m-d', strtotime($date_search_end))." 23:59:59'";
+            }
               
         $query = $db->query($sql);
         $list = $query->getResultArray();

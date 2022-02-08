@@ -117,7 +117,7 @@ class BillingModel extends Model
 
     function getAmountPaid($id){
         $db = db_connect();
-        $query = $db->query("SELECT amount FROM installments WHERE id_billing ='".$id."' AND status=3");
+        $query = $db->query("SELECT amount, pix, especie FROM installments WHERE id_billing ='".$id."' AND status=3");
         $list = $query->getResultArray();
         return $list;
     }
@@ -293,7 +293,15 @@ class BillingModel extends Model
         $db = db_connect();
         $builder = $db->table('installments');
         
-        $pay = ['status' => 3];
+        $pay = [
+            'type' => $data['type_payment'],
+            'status' => 3,
+            'pix' => $data['pix'],
+            'especie' => $data['especie'],
+            'obs' => $data['obs'],
+            'status' => 3,
+            'payment_date' => date('Y-m-d')
+        ];
 
         $builder->where('id', $data['id_installment']);
         $builder->where('id_billing', $data['detail_id']);        

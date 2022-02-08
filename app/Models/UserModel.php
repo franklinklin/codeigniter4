@@ -118,9 +118,9 @@ class UserModel extends Model
 
     function checkCpf($cpf,$id_perfil){
         $db = db_connect();
-        if($id_perfil ==2){
+        if($id_perfil ==3){
             $query = $db->query("SELECT * FROM motoboy WHERE document ='".$cpf."'");        
-        }elseif($id_perfil ==3){
+        }elseif($id_perfil ==2){
             $query = $db->query("SELECT * FROM client WHERE document ='".$cpf."'");
         }    
         $list = $query->getRow();

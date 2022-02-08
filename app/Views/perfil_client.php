@@ -15,9 +15,7 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap4.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
 
-    </script>
-
-
+    
     <title>Sistema de cobrança</title>
   </head>
   <body>
@@ -39,8 +37,140 @@
                     </div>
 
                     <div class="card-body">
+
+                        <form>
+                            <div class="row form-group">
+                                <div class="col">
+                                    <label for="formGroupExampleInput"><b>Data</b></label>
+                                    <?php if(isset($billing['id']) && $billing['id']){?>
+                                        <br>
+                                        <?php echo isset($billing['contract_date']) && $billing['contract_date']?date('d/m/Y', strtotime($billing['contract_date'])):date('d/m/Y');?>
+                                    <?php }else{?>    
+                                        <input type="text" name="contract_date" class="form-control" value="<?php echo isset($billing['contract_date']) && $billing['contract_date']?date('d/m/Y', strtotime($billing['contract_date'])):date('d/m/Y');?>" placeholder="Data" onkeyup="maskdate()" onkeypress="isNumber();maskdate();" maxlength="10">
+                                    <?php } ?>                                    
+                                </div>
+                                <div class="col">
+                                    <label for="formGroupExampleInput"><b>CPF</b></label>
+                                    <?php if(isset($billing['id']) && $billing['id']){?>
+                                        <br>
+                                        <?php echo isset($billing['document'])?$billing['document']:'';?>
+                                    <?php }else{?>    
+                                        <input type="text" name="document" id="cpfx" value="<?php echo isset($billing['document'])?$billing['document']:'';?>" class="form-control" placeholder="CPF" onblur="load_cpf()" onkeyup="maskdocument()" onkeypress="isNumber();maskdocument();" maxlength="14">
+                                    <?php } ?>
+                                </div>
+                                <div class="col">
+                                    <label for="formGroupExampleInput"><b>Nome</b></label>
+                                    
+                                    <?php if(isset($billing['id']) && $billing['id']){?>
+                                    
+                                        <br>
+                                        <?php echo isset($client->name)?$client->name:'';?>
+                                    <?php }else{?>
+                                        <br><span id="span_name"></span> 
+                                        <!--input type="text"  name="name" value="<?php echo isset($billing['name'])?$billing['name']:'';?>" class="form-control" placeholder="Nome"-->
+                                    <?php } ?>                                    
+                                </div>
+                                <div class="col">
+                                    <label for="formGroupExampleInput"><b>Telefone</b></label>
+                                    <br>
+                                    <?php echo isset($client->phone)?$client->phone:'';?>
+                                    <span id="span_phone"></span> 
+                                    <!--input type="text" name="phone" class="form-control" value="<?php echo isset($billing['phone'])?$billing['phone']:'';?>" placeholder="Telefone" onkeyup="maskphone()" onkeypress="isNumber()" maxlength="15"-->
+                                </div>
+                            </div>
+                                                        
+                            <div class="row form-group">
+                                
+                                <div class="col">
+                                    <label for="formGroupExampleInput"><b>Valor</b></label>
+                                    <?php if(isset($billing['id']) && $billing['id']){?>
+                                        <br>
+                                        <?php echo isset($billing['total'])?$billing['total']:'';?>    
+                                    <?php }else{?>    
+                                        <input type="text" name="total" class="form-control" value="<?php echo isset($billing['total'])?$billing['total']:'';?>" placeholder="Valor" onKeyPress="return(moeda(this,'.',',',event))" maxlength="10">
+                                    <?php } ?>
+                                </div>
+                                
+                                <div class="col">                                   
+                                    <label for="formGroupExampleInput"><b>Juros</b></label>
+                                    <?php if(isset($billing['id']) && $billing['id']){?>
+                                        <br>
+                                        <?php echo isset($billing['fees'])?$billing['fees']:'';?>
+                                    <?php }else{?>    
+                                        <input type="text" name="fees" class="form-control" value="<?php echo isset($billing['fees'])?$billing['fees']:'';?>" placeholder="Juros" onkeypress="isNumber()" maxlength="5">
+                                    <?php } ?>
+                                    
+                                </div>
+                                <div class="col">
+                                    <label for="formGroupExampleInput"><b>QTD de parcelas</b></label>
+                                    <?php if(isset($billing['id']) && $billing['id']){?>
+                                        <br>
+                                        <?php echo isset($billing['installments'])?$billing['installments']:'';?>
+                                    <?php }else{?>    
+                                        <input type="text" name="installments" class="form-control" value="<?php echo isset($billing['installments'])?$billing['installments']:'';?>" placeholder="QTD de parcelas" onkeypress="isNumber()" onblur="calc()" maxlength="5">
+                                    <?php } ?>
+                                </div>
+                            </div>
+
+                            <div class="row form-group">
+                                <div class="col">
+                                    <label for="formGroupExampleInput"><b>Valor da parcela</b></label>
+                                    <?php if(isset($billing['id']) && $billing['id']){?>
+                                        <br>
+                                        <?php echo isset($billing['installments_value'])?$billing['installments_value']:'';?>
+                                    <?php }else{?>    
+                                        <input type="text" name="installments_value" class="form-control" value="<?php echo isset($billing['installments_value'])?$billing['installments_value']:'';?>" placeholder="Valor da parcela" onKeyPress="return(moeda(this,'.',',',event))" maxlength="10">
+                                    <?php } ?>
+                                </div>
+                                <div class="col">
+                                    <label for="formGroupExampleInput"><b>Valor a ser pago</b></label>
+                                    <?php if(isset($billing['id']) && $billing['id']){?>
+                                        <br>
+                                        <?php echo isset($billing['amount_to_be_paid'])?$billing['amount_to_be_paid']:'';?>
+                                    <?php }else{?>        
+                                        <input type="text" name="amount_to_be_paid" class="form-control" value="<?php echo isset($billing['amount_to_be_paid'])?$billing['amount_to_be_paid']:'';?>" placeholder="Valor a ser pago"  onKeyPress="return(moeda(this,'.',',',event))" maxlength="10">
+                                    <?php } ?>
+                                    
+                                </div>
+                                
+                                <div class="col">
+                                    <label for="formGroupExampleInput"><b>Valor pago</b></label>
+                                    <br>
+                                    <?php echo isset($billing['amount_paid'])?$billing['amount_paid']:'';?>
+                                    <!--input type="text" name="amount_paid" class="form-control" value="<?php echo isset($billing['amount_paid'])?$billing['amount_paid']:'';?>" placeholder="Valor pago" onKeyPress="return(moeda(this,'.',',',event))" maxlength="10"-->
+                                </div>
+
+                                <div class="col">
+                                    <label for="formGroupExampleInput"><b>Valor em a ver</b></label>
+                                    <br>
+                                    <?php 
+                                        $aver = 0;
+                                        if(isset($billing['amount_to_be_paid']) && $billing['amount_paid']){
+                                            
+                                            $amount_to_be_paid = str_replace(".", "", $billing['amount_to_be_paid']);
+                                            $amount_to_be_paid = str_replace(",", ".", $amount_to_be_paid);    
+
+                                            $amount_paid = str_replace(".", "", $billing['amount_paid']);
+                                            $amount_paid = str_replace(",", ".", $amount_paid);    
+
+                                            $aver = $amount_to_be_paid - $amount_paid;
+                                        }
+                                        echo number_format($aver, 2, ',', '.');
+                                    ?>
+                                </div>
+                            </div>
+                            <input type="hidden" name="id" class="form-control" value="<?php echo isset($billing['id'])?$billing['id']:'';?>" >
+                            <?php if(!isset($billing['id'])){?>   
+                                <button type="submit" class="btn btn-success" >Salvar</button>
+                            <?php } ?>
+                            
+                        </form>
                     
-                    <table id="example" class="table table-responsive table-striped" style="width:100%">
+                        <hr>
+
+                    <div id="lista_desk">
+
+                        <table id="example" class="table table-responsive table-striped" style="width:100%">
                             <thead>
                                 <tr>
                                     <th>ID</th>
@@ -49,7 +179,7 @@
                                     <th>Tipo</th>
 
                                     <?php if(isset($perfil_moto) && $perfil_moto){?>
-                                        <th>PIX</th>
+                                        <th>PIX&nbsp;&nbsp;&nbsp;</th>
                                         <th>Espécie</th>
                                     <?php } ?>
 
@@ -71,9 +201,9 @@
                                             <td><?php echo $list['installment'].'/'.$installments;?></td>
                                             <td><?php echo $list['amount'];?></td>
                                             <td><?php echo $list['payment_date'] !='0000-00-00'?date('d/m/Y', strtotime($list['payment_date'])):'';?></td>
-                                            <td>
+                                            <td> 
                                                 <?php if($list['status'] !=2 && $list['status'] !=3){?>
-                                                    <select class="custom-select" name="type_<?php echo $list['id'];?>">
+                                                    <select class="custom-select" name="type_<?php echo $list['id'];?>" id="type_<?php echo $list['id'];?>">
                                                         <option value="2">PIX</option>
                                                         <option value="3">Espécie</option>
                                                         <option value="4">PIX e Espécie</option>
@@ -87,14 +217,17 @@
 
                                             <?php if(isset($perfil_moto) && $perfil_moto){?>
                                                 <td>
-                                                    <?php if($list['status'] ==2){?>
+                                                    <?php //if($list['status'] ==2 && $list['type']==4){?>
+                                                    <?php if($list['status'] !=3){?>
                                                         <input type="text" size="4" placeholder="PIX" id="pix_<?php echo $list['id'];?>" class="form-control" onKeyPress="return(moeda(this,'.',',',event))" maxlength="5">
                                                     <?php }else{ ?>
                                                         <?php echo $list['pix'];?>
                                                     <?php } ?>    
                                                 </td>
+
                                                 <td>
-                                                    <?php if($list['status'] ==2){?>
+                                                    <?php //if($list['status'] ==2 && $list['type']==4){?>
+                                                    <?php if($list['status'] !=3){?>
                                                         <input type="text" size="4" placeholder="Espécie" id="especie_<?php echo $list['id'];?>" class="form-control" onKeyPress="return(moeda(this,'.',',',event))" maxlength="5">
                                                     <?php }else{ ?>
                                                         <?php echo $list['especie'];?>
@@ -108,7 +241,8 @@
                                             </td>
                                             <td>
                                                 <?php if(isset($perfil_moto) && $perfil_moto){?>
-                                                    <?php if($list['status'] ==2){?>
+                                                    <?php //if($list['status'] ==2){?>
+                                                    <?php if($list['status'] !=3){?>
                                                         <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalMotoboy" onclick="motoboy_payment(<?php echo $list['id'];?>)">Confirmar</button>
                                                     <?php } ?>
                                                 <?php }else{?>
@@ -119,7 +253,8 @@
                                             </td>
                                             <?php if(isset($perfil_moto) && $perfil_moto){?>
                                                 <td>
-                                                    <?php if($list['status'] ==2){?>
+                                                    <?php //if($list['status'] ==2){?>
+                                                    <?php if($list['status'] !=3){?>
                                                         <textarea class="form-control" id="obs_<?php echo $list['id'];?>" placeholder="observação"></textarea>
                                                     <?php }else{ ?>    
                                                         <?php echo $list['obs'];?>
@@ -130,14 +265,118 @@
                                     <?php } ?>
                                 <?php } ?>                               
                         </table>
+
+                    </div>    
+                    <!------------------>
+                    
+                    <div id="lista_mobile">
+
+                        <table class="table table-responsive table-striped" style="width:100%">
+                        <?php if(isset($list_installments) && $list_installments){?>
+                                <?php foreach($list_installments as $list){?>
+                                
+                            <tr>
+                                    <table>                                     
+                                        <tr> 
+                                            <td align="right">Parcela:</td>                                       
+                                            <td>
+                                                <?php $installments = isset($billing['installments'])?$billing['installments']:'';?>
+                                                <?php echo $list['installment'].'/'.$installments;?>
+                                            </td>
+                                        </tr>
+                                        <tr>                                               
+                                            <td  align="right">Valor da parcela:</td>
+                                            <td><?php echo $list['amount'];?></td>
+                                        </tr>    
+                                            
+                                        <tr>
+                                            <td align="right">Data do pagamento:</td>
+                                            <td><?php echo $list['payment_date'] !='0000-00-00'?date('d/m/Y', strtotime($list['payment_date'])):'';?></td>
+                                        </tr>    
+                                        
+                                        <tr>
+                                            <td align="right">Forma de pagamento:&nbsp;</td>
+                                            <td>
+                                                <?php if($list['status'] !=2 && $list['status'] !=3){?>
+                                                    <select class="custom-select" name="type_<?php echo $list['id'];?>" id="m_type_<?php echo $list['id'];?>">
+                                                        <option value="2">PIX</option>
+                                                        <option value="3">Espécie</option>
+                                                        <option value="4">PIX e Espécie</option>
+                                                    </select>
+                                                <?php }else{ ?>
+                                                    <?php echo $list['type']==3?'Espécie':''; ?>
+                                                    <?php echo $list['type']==2?'PIX':''; ?>
+                                                    <?php echo $list['type']==4?'PIX e Espécie':''; ?>
+                                                <?php } ?>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td align="right">Valor em PIX:&nbsp;</td>
+                                            <td>
+                                                <?php if($list['status'] !=3){?>
+                                                    <input type="text" size="4" placeholder="PIX" id="m_pix_<?php echo $list['id'];?>" class="form-control" onKeyPress="return(moeda(this,'.',',',event))" maxlength="5">
+                                                <?php }else{ ?>
+                                                    <?php echo $list['pix'];?>
+                                                <?php } ?>    
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td align="right">Valor em espécie:&nbsp;</td>
+                                            <td>
+                                                <?php if($list['status'] !=3){?>
+                                                    <input type="text" size="4" placeholder="Espécie" id="m_especie_<?php echo $list['id'];?>" class="form-control" onKeyPress="return(moeda(this,'.',',',event))" maxlength="5">
+                                                <?php }else{ ?>
+                                                    <?php echo $list['especie'];?>
+                                                <?php } ?>
+                                            </td>
+                                        </tr>        
+                                        <tr>
+                                            <td align="right">Observação:&nbsp;</td>
+                                            <td>
+                                                <?php if($list['status'] !=3){?>
+                                                    <textarea class="form-control" id="m_obs_<?php echo $list['id'];?>" placeholder="observação"></textarea>
+                                                <?php }else{ ?>    
+                                                    <?php echo $list['obs'];?>
+                                                <?php } ?>    
+                                            </td>
+                                        </tr>
+                                        <tr><td></td>
+                                            <td align="right">
+                                                <br>
+                                                <?php if(isset($perfil_moto) && $perfil_moto){?>
+                                                    <?php if($list['status'] !=3){?>
+                                                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalMotoboy" onclick="motoboy_payment_mobile(<?php echo $list['id'];?>)">Confirmar</button>
+                                                    <?php } ?>
+                                                <?php }else{?>
+                                                    <?php if($list['status'] !=2 && $list['status'] !=3){?>
+                                                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#staticBackdrop" onclick="payment_mobile(<?php echo $list['id'];?>)">Pagar</button>
+                                                    <?php } ?>
+                                                <?php }?>
+                                            </td>
+                                        </tr>
+                                    </table>    
+                                </tr>
+                                <tr><td><hr></td></tr>
+
+                            <?php } ?>
+                        <?php } ?>       
+                        </table>
+                    </div>                        
+                    <!------------------>
+                     
                     </div>
                 </div>
                
             </div>
-        </div>
 
         </div>
+        </div>   
 
+        <footer class="footer mt-auto py-3">
+            <div class="container">
+                <span class="text-muted">Criado por Consultor de Vendas.</span>
+            </div>
+        </footer>
 
         <!-- Modal -->
         <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -192,9 +431,10 @@
         <?php echo form_open('billing/confirm_payment',$attributes_); ?>
             <input type="hidden" name="id_installment" id="id_installment_confirm">
             <input type="hidden" name="detail_id" value="<?php echo isset($detail_id)?$detail_id:'';?>">
-            <input type="text" name="obs" id="moto_obs">
-            <input type="text" name="pix" id="moto_pix">
-            <input type="text" name="especie" id="moto_especie">
+            <input type="hidden" name="obs" id="moto_obs">
+            <input type="hidden" name="pix" id="moto_pix">
+            <input type="hidden" name="type_payment" id="moto_type">            
+            <input type="hidden" name="especie" id="moto_especie">
             <input type="hidden" name="redirect_detail_motoboy" value=1>         
         <?php echo form_close(); ?>
 
@@ -212,10 +452,28 @@
                 var obs = document.querySelector('#obs_'+id).value;
                 var pix = document.querySelector('#pix_'+id).value;
                 var especie = document.querySelector('#especie_'+id).value;
+                var type = document.querySelector('#type_'+id).value;
 
                 document.querySelector('#moto_obs').value = obs;
                 document.querySelector('#moto_pix').value = pix;
                 document.querySelector('#moto_especie').value = especie;
+                document.querySelector('#moto_type').value = type;
+            }
+
+            function motoboy_payment_mobile(id){
+
+                var id_installment = document.querySelector('#id_installment_confirm');
+                    id_installment.value = id;
+
+                var obs = document.querySelector('#m_obs_'+id).value;
+                var pix = document.querySelector('#m_pix_'+id).value;
+                var especie = document.querySelector('#m_especie_'+id).value;
+                var type = document.querySelector('#m_type_'+id).value;
+
+                document.querySelector('#moto_obs').value = obs;
+                document.querySelector('#moto_pix').value = pix;
+                document.querySelector('#moto_especie').value = especie;
+                document.querySelector('#moto_type').value = type;
             }
 
             function payment(id){            
@@ -223,6 +481,15 @@
                     id_installment.value = id; 
 
                 var type_id = document.querySelector('[name="type_'+id+'"]');
+                var type_payment = document.querySelector('[name="type_payment"]');
+                    type_payment.value = type_id.value;
+            }
+
+            function payment_mobile(id){            
+                var id_installment = document.querySelector('[name="id_installment"]');
+                    id_installment.value = id; 
+
+                var type_id = document.querySelector('[name="m_type_'+id+'"]');
                 var type_payment = document.querySelector('[name="type_payment"]');
                     type_payment.value = type_id.value;
             }
@@ -270,5 +537,20 @@
             }
         </script>
         
+
+        <style>
+            @media (min-width: 800px){
+                #lista_mobile{
+                    display: none;                    
+                }
+            }
+
+            @media (max-width: 800px){
+                #lista_desk{
+                    display: none;                    
+                }
+            }
+        </style>
+
   </body>
 </html>
