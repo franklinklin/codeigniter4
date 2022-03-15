@@ -32,6 +32,7 @@
                     $soma_moto = 0;
                     $pix_amount = 0;
                     $especie_amount = 0;
+                    $amount = 0;
 
                        foreach($total_motoboy as $tmoto){
 
@@ -39,26 +40,27 @@
 
                                 $amount = str_replace(".", "", $tmoto['amount']);
                                 $amount = str_replace(",", ".", $amount);                
-                                $soma_moto = $soma_moto + $amount;
+                                $soma_moto = floatval($soma_moto) + floatval($amount);
                             }else{
                                 if($tmoto['pix'] !=''){
                                     $amount = str_replace(".", "", $tmoto['pix']);
                                     $amount = str_replace(",", ".", $amount);                
-                                    $soma_moto = $soma_moto + $amount;
+                                    $soma_moto = floatval($soma_moto) + floatval($amount);
 
                                     $pix = str_replace(".", "", $tmoto['pix']);
                                     $pix = str_replace(",", ".", $pix);                
-                                    $pix_amount = $pix_amount + $pix;
+                                    $pix_amount = floatval($pix_amount) + floatval($pix);
                                 }
 
                                 if($tmoto['especie'] !=''){
+                                    
                                     $amount = str_replace(".", "", $tmoto['especie']);
-                                    $amount = str_replace(",", ".", $amount);                
-                                    $soma_moto = $soma_moto + $amount;
-
+                                    $amount = str_replace(",", ".", $amount);
+                                    $soma_moto = floatval($amount) + floatval($soma_moto);
+                                    
                                     $especie = str_replace(".", "", $tmoto['especie']);
                                     $especie = str_replace(",", ".", $especie);                
-                                    $especie_amount = $especie_amount + $especie;
+                                    $especie_amount = floatval($especie_amount) + floatval($especie);
                                 }
                             }
                        } 

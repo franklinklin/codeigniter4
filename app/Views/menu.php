@@ -33,9 +33,10 @@
       </li>
     </ul>
     <?php if(isset($search)){?>
-      <?php //print_r($user);?>
+      
       <?php echo form_open($search, 'class="form-inline my-2 my-lg-0" id="searchForm"'); ?>
           <?php if(isset($search_log) && $search_log){ ?>
+           
                 <select class="form-control mr-sm-2" name="user_search" >
                     <option></option>
                     <?php if(isset($user) && $user){ ?>
@@ -49,9 +50,30 @@
 
                               }elseif($ur['id_perfil']==3){
                                 $perfil = 'Motoboy';
-                              }                          
+
+                                $moto = 1;
+                                foreach($moto_launching as $mt){                                 
+                                    if($mt['id_motoboy'] == $ur['id_user']){
+                                        $moto = 3;
+                                    }
+                                }
+                              }
                           ?>
-                          <option value="<?php echo $ur['id'];?>" <?php echo isset($search_data['user_search']) && $search_data['user_search'] == $ur['id']?'selected':'';?> ><?php echo $ur['name']."-".$perfil;?></option>
+
+                          <?php if(isset($search_moto) && $search_moto){?> 
+
+                              <?php if($ur['id_perfil']==3 && $moto ==3){ ?>
+                                  <option value="<?php echo $ur['id_user'];?>" <?php echo isset($search_data['user_search']) && $search_data['user_search'] == $ur['id_user']?'selected':'';?> ><?php echo $ur['name']."-".$perfil;?></option> 
+                              <?php } ?>
+
+                          <?php }else{ ?>
+
+                              <?php if($ur['id_perfil']==3 && $moto ==3){ ?>
+                                  <option value="<?php echo $ur['id'];?>" <?php echo isset($search_data['user_search']) && $search_data['user_search'] == $ur['id']?'selected':'';?> ><?php echo $ur['name']."-".$perfil;?></option> 
+                              <?php } ?>
+
+                          <?php } ?>
+
                         <?php } ?>
                       <?php } ?>                   
                 </select>
@@ -59,12 +81,14 @@
                 <input name='date_search' class="form-control mr-sm-2" type="text" id="datepicker" size=7 value="<?php echo isset($search_data['date_search'])?$search_data['date_search']:'';?>">
                 <input name='date_search_end' class="form-control mr-sm-2" type="text" id="datepicker_end" size=7 value="<?php echo isset($search_data['date_search_end'])?$search_data['date_search_end']:'';?>">
           <?php } ?>
+
+
           <input name='search' class="form-control mr-sm-2" type="search" placeholder="digite uma palavra" aria-label="Search" value="<?php echo isset($search_data['search'])?$search_data['search']:'';?>">
           <button class="btn btn-outline-success my-2 my-sm-0" 
                   id="btnsearch" 
                   type="button" 
                   onclick='document.getElementById("searchForm").submit();'>Pesquisa</button>
-      <?php echo form_close(); ?>  
+      <?php echo form_close(); ?>
     <?php } ?>  
   </div>
 </nav>

@@ -198,7 +198,10 @@
                                     <?php foreach($list_installments as $list){?>
                                         <tr>
                                             <?php $installments = isset($billing['installments'])?$billing['installments']:'';?>
-                                            <td><?php echo $list['installment'].'/'.$installments;?></td>
+                                            <td>
+                                                <?php echo $list['installment'].'/'.$installments;?>
+                                                <input type="hidden" id="installment_confirm_<?php echo $list['id'];?>" value="<?php echo $list['installment'].'/'.$installments;?>"> 
+                                            </td>
                                             <td><?php echo $list['amount'];?></td>
                                             <td><?php echo $list['payment_date'] !='0000-00-00'?date('d/m/Y', strtotime($list['payment_date'])):'';?></td>
                                             <td> 
@@ -282,6 +285,7 @@
                                             <td>
                                                 <?php $installments = isset($billing['installments'])?$billing['installments']:'';?>
                                                 <?php echo $list['installment'].'/'.$installments;?>
+                                                <input type="hidden" id="m_installment_confirm_<?php echo $list['id'];?>" value="<?php echo $list['installment'].'/'.$installments;?>"> 
                                             </td>
                                         </tr>
                                         <tr>                                               
@@ -429,6 +433,7 @@
 
         <?php $attributes_ = array('id' => 'form_confirm_payment');?>
         <?php echo form_open('billing/confirm_payment',$attributes_); ?>
+            <input type="hidden" name="installment" id="installment_confirm">
             <input type="hidden" name="id_installment" id="id_installment_confirm">
             <input type="hidden" name="detail_id" value="<?php echo isset($detail_id)?$detail_id:'';?>">
             <input type="hidden" name="obs" id="moto_obs">
@@ -448,12 +453,14 @@
 
                 var id_installment = document.querySelector('#id_installment_confirm');
                     id_installment.value = id;
-
+                    
+                var ins = document.querySelector('#installment_confirm_'+id).value;
                 var obs = document.querySelector('#obs_'+id).value;
                 var pix = document.querySelector('#pix_'+id).value;
                 var especie = document.querySelector('#especie_'+id).value;
                 var type = document.querySelector('#type_'+id).value;
 
+                document.querySelector('#installment_confirm').value = ins;
                 document.querySelector('#moto_obs').value = obs;
                 document.querySelector('#moto_pix').value = pix;
                 document.querySelector('#moto_especie').value = especie;
@@ -464,12 +471,14 @@
 
                 var id_installment = document.querySelector('#id_installment_confirm');
                     id_installment.value = id;
-
+                
+                var ins = document.querySelector('#m_installment_confirm_'+id).value;
                 var obs = document.querySelector('#m_obs_'+id).value;
                 var pix = document.querySelector('#m_pix_'+id).value;
                 var especie = document.querySelector('#m_especie_'+id).value;
                 var type = document.querySelector('#m_type_'+id).value;
 
+                document.querySelector('#installment_confirm').value = ins;
                 document.querySelector('#moto_obs').value = obs;
                 document.querySelector('#moto_pix').value = pix;
                 document.querySelector('#moto_especie').value = especie;

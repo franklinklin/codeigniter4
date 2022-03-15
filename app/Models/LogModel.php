@@ -76,7 +76,14 @@ class LogModel extends Model
 
     function getUser(){
         $db = db_connect();
-        $query = $db->query('SELECT * FROM user');
+        $query = $db->query("SELECT * FROM user where deleted_at ='0000-00-00 00:00:00' ORDER BY id_perfil DESC");
+        $list = $query->getResultArray();
+        return $list;
+    }
+
+    function getMotoboysWithLaunch(){
+        $db = db_connect();
+        $query = $db->query('SELECT DISTINCT client.id_motoboy FROM billing INNER JOIN client ON client.id = billing.id_user');
         $list = $query->getResultArray();
         return $list;
     }

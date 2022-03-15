@@ -75,19 +75,22 @@ class Log extends BaseController
                 $total_motoboy = $this->model->get_total_motoboy($searchData);
             }
         }
-        
 
+        $moto_launching = $this->model->getMotoboysWithLaunch();
+                
         return view($this->controller,
-                        [   'form' => $this->controller,
-                            'search' => $this->controller,
-                            'logs' => $paginateData,
-                            'pager' => $this->model->pager,
-                            'search_log' => true,
-                            'user' => $this->model->getUser(),
-                            'search_data' => $searchData,
-                            'total_motoboy' => $total_motoboy
-                        ]
-                   );
+                    [   
+                        'form' => $this->controller,
+                        'search' => $this->controller,
+                        'logs' => $paginateData,
+                        'pager' => $this->model->pager,
+                        'search_log' => true,
+                        'user' => $this->model->getUser(),
+                        'moto_launching' => $moto_launching,
+                        'search_data' => $searchData,
+                        'total_motoboy' => $total_motoboy
+                    ]
+                );
     }
 
     /*public function log($data){      

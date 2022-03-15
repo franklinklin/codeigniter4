@@ -59,7 +59,7 @@ class MotoboyModel extends Model
 
     function getMotoboys(){
         $db = db_connect();
-        $query = $db->query("SELECT id, name FROM motoboy");
+        $query = $db->query("SELECT id, name FROM motoboy WHERE deleted_at ='0000-00-00 00:00:00'");
         $list = $query->getResultArray();
         return $list;
     }

@@ -163,13 +163,20 @@ class BillingModel extends Model
             billing.amount_to_be_paid ,
             billing.installments,
             billing.amount_paid,
+            billing.last_date,
             client.zipcode,
+            client.zipcode_business,
             client.number,
+            client.number_business,
             client.address,
+            client.address_business,
             client.phone,
-            client.district,    
+            client.district, 
+            client.district_business,                
             client.city,
+            client.city_business,
             client.state,
+            client.state_business,
             client.phone           
         FROM billing
         INNER JOIN client ON client.id = billing.id_user
@@ -318,11 +325,72 @@ class BillingModel extends Model
         ];        
         $builder->insert($data);
     }
+
     function checkStatus($id){
         $db = db_connect();
         $sql="SELECT sum(status) as status FROM installments WHERE id_billing=".$id;
         $query = $db->query($sql);
         $list = $query->getRow();
+        return $list;
+    }
+
+    function getTotalDay($cpf){
+        $db = db_connect();
+        $sql = "SELECT installments.pix, installments.especie
+                FROM installments
+                INNER JOIN billing ON billing.id = installments.id_billing
+                INNER JOIN client ON client.id = billing.id_user
+                INNER JOIN motoboy ON motoboy.id = client.id_motoboy
+                WHERE 
+                installments.payment_date ='".date('Y-m-d')."' 
+                AND installments.status =3
+                AND motoboy.document ='".$cpf."'";
+        $query = $db->query($sql);
+        $list = $query->getResultArray();
+        return $list;
+    }
+
+    function search_where($data){
+
+        if(isset($data['date_search']) && $data['date_search']){
+            $date_search = str_replace("/", "-", $data['date_search']);
+        }
+
+        if(isset($data['date_search_end']) && $data['date_search_end']){
+            $date_search_end = str_replace("/", "-", $data['date_search_end']);
+        }
+       
+        $db = db_connect();
+        $sql ="
+            SELECT 
+            client.name,
+            billing.amount_paid,
+            billing.total,
+            billing.amount_to_be_paid,
+            billing.id,
+            billing.last_date
+            FROM client
+            INNER JOIN billing ON billing.id_user = client.id
+            WHERE
+            (client.name LIKE '%".$data['search']."%' OR
+            client.document LIKE '%".$data['search']."%' OR
+            billing.id LIKE '%".$data['search']."%' OR
+            billing.total LIKE '%".$data['search']."%' OR
+            billing.amount_paid LIKE '%".$data['search']."%' OR
+            billing.amount_to_be_paid LIKE '%".$data['search']."%')";
+
+            if(isset($data['date_search']) && $data['date_search']){
+                $sql .= " AND billing.last_date >= '".date('Y-m-d', strtotime($date_search))." 00:00:00'";                
+            }
+            if(isset($data['date_search_end']) && $data['date_search_end']){
+                $sql .= " AND billing.last_date <= '".date('Y-m-d', strtotime($date_search_end))." 23:59:59'";
+            }
+            if($data['user_search']){                
+                $sql .= " AND client.id_motoboy = ".$data['user_search']."";
+            }
+              
+        $query = $db->query($sql);
+        $list = $query->getResultArray();
         return $list;
     }
     

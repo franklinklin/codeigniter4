@@ -34,12 +34,11 @@
         <table class="table table-responsive table-striped table-hover">
             <tr>
                 <th>ID</th>    
+                <th>Apelido</th>
                 <th>Nome</th>
-                <th>Contato</th>
-                <th></th>                
+                <th>Contato</th>                        
                 <th>Endereço residencial</th>
-                <th>Endereço comercial</th>                
-                <th>E-mail</th>
+                <th>Endereço comercial</th>
                 <th colspan=2>Ação</th>
             </tr>
             <?php if(isset($clients) && $clients){ ?>
@@ -47,11 +46,11 @@
                     <tr>
                         <td><?php echo $client['id'];?></td>
                         <td><?php echo $client['name'];?></td>
-                        <td><?php echo $client['phone'];?></td>
-                        <td><?php echo $client['phone2'];?></td>                        
-                        <td><?php echo $client['address'];?></td>
-                        <td><?php echo $client['address_business'];?></td>
                         <td><?php echo $client['email'];?></td>
+                        <td><?php echo $client['phone'];?></td>
+                        <!--td><?php echo $client['phone2'];?></td-->                        
+                        <td><?php echo $client['address'];?></td>
+                        <td><?php echo $client['address_business'];?></td>                        
                         <td>
                             <?php echo anchor('client/edit/'.$client['id'], '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M9.243 19H21v2H3v-4.243l9.9-9.9 4.242 4.244L9.242 19zm5.07-13.556l2.122-2.122a1 1 0 0 1 1.414 0l2.829 2.829a1 1 0 0 1 0 1.414l-2.122 2.121-4.242-4.242z"/></svg>')?>
                         </td>

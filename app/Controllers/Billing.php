@@ -38,6 +38,7 @@ class Billing extends BaseController
 
     public function index()
     {   
+        //cliente
         if($this->menu ==2){
             
             return view('perfil_client_list',[
@@ -47,12 +48,31 @@ class Billing extends BaseController
             die();
         }
 
+        //moto
         if($this->menu ==3){
-            $colletc = $this->model->getCollect($this->cpf);          
+            $total_day = $this->model->getTotalDay($this->cpf);  
+            
+            $sum =0;
+            if($total_day){
+                foreach($total_day as $day){
+
+                    if(isset($day['pix']) && $day['pix']){
+                        $sum = $sum + floatval(str_replace(",",".",$day['pix']));
+                    }
+
+                    if(isset($day['especie']) && $day['especie']){
+                        $sum = $sum + floatval(str_replace(",",".",$day['especie']));
+                    }
+                }
+            }
+
+            $getTotalDay = $sum;
+
             return view('perfil_motoboy',[
                 'search' => $this->controller,
                 'billings'=> $this->model->getCollect($this->cpf),
-                'paid' => $this->model->installments_paid($this->cpf)
+                'paid' => $this->model->installments_paid($this->cpf),
+                'total_day' => $getTotalDay
             ]);
             die();
         }
@@ -75,9 +95,18 @@ class Billing extends BaseController
 		if (isset($searchData) && isset($searchData['search'])) {
 			$search = $searchData['search'];
 		}
+        if(!isset($searchData['user_search'])){
+            $searchData['user_search'] ='';
+        }
+        if(!isset($searchData['date_search'])){
+            $searchData['date_search'] ='';
+        }
+        if(!isset($searchData['date_search_end'])){
+            $searchData['date_search_end'] ='';
+        }
 
-        if ($search == '') {
-			//$paginateData = $this->model->paginate(10);
+        if ($search == '' && $searchData['user_search'] == '' && $searchData['date_search'] == '' && $searchData['date_search_end'] == '') {
+        	//$paginateData = $this->model->paginate(10);
             $paginateData = $this->model->select('client.name')
                                         ->select('billing.amount_paid')
                                         ->select('billing.total')
@@ -87,7 +116,7 @@ class Billing extends BaseController
                                         ->join('client', 'client.id = billing.id_user')
                                         ->paginate(1000);
 		} else {
-			$paginateData = $this->model
+			/*$paginateData = $this->model
                                  ->select('client.name')
                                  ->select('billing.amount_paid')
                                  ->select('billing.total')
@@ -97,19 +126,28 @@ class Billing extends BaseController
                                  ->join('client', 'client.id = billing.id_user')
                                  ->orLike('client.name', $search)
                                  ->orLike('client.document', $search)
+                                 ->orLike('billing.id', $search)
                                  ->orLike('billing.total', $search)
                                  ->orLike('billing.amount_to_be_paid', $search)
                                  ->orLike('billing.amount_paid', $search)
-                                 ->paginate(1000);
+                                 ->paginate(1000);*/
+            $paginateData = $this->model->search_where($searchData);
 		}
-
+        
+        $logModel = new LogModel();
+        
         return view($this->controller,
             [   
                 'form' => $this->controller,
                 'search' => $this->controller,
                 'billings' => $paginateData,
                 'menu' => $this->menu,
-                'pager' => $this->model->pager
+                'pager' => $this->model->pager,
+                'user' => $logModel->getUser(),
+                'moto_launching' => $logModel->getMotoboysWithLaunch(),
+                'search_log' => true,
+                'search_moto'=> true,
+                'search_data' => $searchData
             ]
         );
     }
@@ -213,8 +251,12 @@ class Billing extends BaseController
        $logModel = new LogModel();
        $logModel->save($data);
 
+       $billing = $this->model->find($id);
+       $client = $this->model->ajaxGetCpf($billing['document']);
+
         return view('perfil_client',[
-            'billing'=> $this->model->find($id),
+            'billing'=> $billing,
+            'client'=> $client,
             'list_installments'=> $this->model->list_installments($id),
             'detail_id'=>$id
         ]);
@@ -273,13 +315,14 @@ class Billing extends BaseController
 
         $id_installment = $this->request->getPost('id_installment');
         $detail_id = $this->request->getPost('detail_id');
-
+        $installment = $this->request->getPost('installment');
+        
         $data['id_perfil'] = $this->menu;
         $data['id_user'] = $this->id_user;
         $data['id_installment'] = $id_installment;
         $data['id_module'] = 6;
         $data['date'] = date('Y-m-d H:i:s');
-        $data['action'] = 'confirmou pagamento id:'.$detail_id.' parcela:'.$id_installment;
+        $data['action'] = 'confirmou pagamento id:'.$detail_id.' parcela:'.$installment;
         $logModel = new LogModel();
         $logModel->save($data);
 

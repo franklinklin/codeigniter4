@@ -23,11 +23,11 @@
 
             <div class="form-row">
                 <div class="form-group col-md-6">
-                    <label for="name">Nome</label>
+                    <label for="name">Apelido</label>
                     <input type="text" name="name" class="form-control" value="<?php echo isset($user['name'])?$user['name']:'';?>">
                 </div>
                 <div class="form-group col-md-6">
-                    <label for="email">E-mail</label>
+                    <label for="email">Nome</label>
                     <input type="text" name="email" class="form-control" value="<?php echo isset($user['email'])?$user['email']:'';?>">
                 </div>
             </div>
